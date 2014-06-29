@@ -32,14 +32,6 @@
 
 
 //-------------------------------------------------------------------
-//  Module function export
-//
-module.exports = {
-    'parseAll': parXML2json
-};
-
-
-//-------------------------------------------------------------------
 //  Parse an XML file into an EMS JSON file
 //
 function parXML2json(ems, nProcsArg, xmlFilenameArg, emsFilenameArg, xmlTagArg, nTagsArg, maxBlockSizeArg, maxTagLengthArg) {
@@ -220,3 +212,14 @@ function parXML2json(ems, nProcsArg, xmlFilenameArg, emsFilenameArg, xmlTagArg, 
     }
 
 }
+
+
+
+
+//-------------------------------------------------------------------
+//  Module function export
+//
+module.exports = {
+    'parseAll': parXML2json
+};
+
