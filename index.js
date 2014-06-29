@@ -219,11 +219,4 @@ function parXML2json(ems, nProcsArg, xmlFilenameArg, emsFilenameArg, xmlTagArg, 
 //-------------------------------------------------------------------
 //  Module function export
 //
-/*
-module.exports = function() {
-    return { 'parseAll': parXML2json }
-};
-*/
 module.exports = { 'parseAll': parXML2json };
-
-
