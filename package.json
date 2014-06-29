@@ -5,28 +5,29 @@
     "description": "Parallel XML to JSON converter for multi-gigabyte files",
     "contributors": [ 
     	{
-	        "name": "Jace A Mogill",
-	        "email": "mogill@synsem.com"
-	    }
+	    "name": "Jace A Mogill",
+	    "email": "mogill@synsem.com"
+	}
     ],
     "scripts" : {
-    "main": "parXML2json.js",
-    "repository": {
+	"main": "parXML2json.js",
+	"repository": {
 	    "type": "git",
 	    "url": "https://github.com/syntheticsemantics/parallel-xml2json.git"
-    },
-    "homepage": "https://synsem.com/EMS.js",
-    "keywords": [
-        "xml", "parse", "parser", "xvert", "convert", "converter", "json",
-        "large", "gigabyte",
-    	"multithreading", "multithreaded",
-	    "parallel", "parallelism", "concurrency",
-    	"shared memory",
-	    "multicore", "manycore",
-	    "Extended Memory Semantics", "EMS"
-    ],
-    "license": "BSD",
-    "engines": {
+	},
+	"homepage": "https://synsem.com/EMS.js",
+	"keywords": [
+            "xml", "parse", "parser", "xvert", "convert", "converter", "json",
+            "large", "gigabyte",
+    	    "multithreading", "multithreaded",
+            "parallel", "parallelism", "concurrency",
+    	    "shared memory",
+            "multicore", "manycore",
+            "Extended Memory Semantics", "EMS"
+	],
+	"license": "BSD",
+	"engines": {
 	    "node": ">=0.10.25"
+	}
     }
 }
