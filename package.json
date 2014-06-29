@@ -1,0 +1,34 @@
+{
+    "name": "parallel-xml2json",
+    "version": "0.1.0",
+    "author": "Synthetic Semantics <info@synsem.com>",
+    "description": "Parallel XML to JSON converter for multi-gigabyte files",
+    "contributors": [ 
+    	{
+	        "name": "Jace A Mogill",
+	        "email": "mogill@synsem.com"
+	    }
+    ],
+    "scripts" : {
+//	"preinstall" : "cd ems; node-gyp configure; node-gyp build; cd ..;"
+//    },
+    "main": "parXML2json.js",
+    "repository": {
+	    "type": "git",
+	    "url": "https://github.com/syntheticsemantics/parallel-xml2json.git"
+    },
+    "homepage": "https://synsem.com/EMS.js",
+    "keywords": [
+        "xml", "parse", "parser", "xvert", "convert", "converter", "json",
+        "large", "gigabyte",
+    	"multithreading", "multithreaded",
+	    "parallel", "parallelism", "concurrency",
+    	"shared memory",
+	    "multicore", "manycore",
+	    "Extended Memory Semantics", "EMS"
+    ],
+    "license": "BSD",
+    "engines": {
+	    "node": ">=0.10.25"
+    }
+}
