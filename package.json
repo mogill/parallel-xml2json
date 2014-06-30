@@ -1,6 +1,6 @@
 {
     "name": "parallel-xml2json",
-    "version": "0.1.13",
+    "version": "0.1.14",
     "author": "Synthetic Semantics <info@synsem.com>",
     "description": "Parallel XML to JSON converter for multi-gigabyte files",
     "contributors": [ 

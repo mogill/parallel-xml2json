@@ -3,7 +3,7 @@
 This Javascript module converts 
 large XML files to JSON in parallel by extracting 
 all the elements with a given tag
-and storing them in EMS shared & persistent storage.
+and storing them in EMS shared memory with persistent storage.
 
 Additional processing may be done with legacy sequential Node.js scripts,
 to which additional [EMS](https://github.com/SyntheticSemantics/ems)-based 
@@ -16,7 +16,7 @@ Processing multi-gigabyte XML files suffers the dual challenges
  for garbage collected languages.
 [EMS](https://github.com/SyntheticSemantics/ems) directly addresses both problems
 with parallel programming primitives and a unified API for 
- synchronizing access to shared data.
+synchronizing access to large amounts of shared data.
 
 Shared-nothing parallel programming models like Hadoop are not
 applicable to processing a single XML file, and serial execution
@@ -29,11 +29,12 @@ cores and parallelism to mask file system latency.
 
 The EMS memory region size is conservatively guesstimated on the XML file size, 
 and may be as much as double the size of the XML file.
+
 The following steps are carried out by every process:
  
-1. Open the XML file and attach to the shared EMS memory
+1. Open the XML file and create the shared EMS memory
 1. Read a block of the file at an offset based on the current shared loop index
-1. All the tags in the block are identified
+1. All the matching tags in the block are identified
 1. The [xml2js](https://www.npmjs.org/package/xml2js) NPM package parses the XML into JSON
 1. The JSON value is stored in the EMS array
 
@@ -52,7 +53,26 @@ JSON records,
 please contact us if you're interested in that capability.
 
 
-  
+## Quick Start
+
+This script will download the 
+[SwissProt database from the University of Washington](http://www.cs.washington.edu/research/xmldatasets/www/repository.html#pir),
+install the required NPM modules (EMS, xml2js, and parallel-xml2json),
+copy the included example into the current directory,
+and load the XML database using 4 processes.
+
+```
+curl http://www.cs.washington.edu/research/xmldatasets/data/SwissProt/SwissProt.xml.gz | gunzip > SwissProt.xml
+npm install ems xml2js parallel-xml2json
+cp node_modules/parallel-xml2json/example.js ./
+node example.js 4 SwissProt.xml Entry 100000
+'''
+
+All the XML data tagged "Entry" are stored as JSON in EMS memory,
+then the program prints some of the contents to the console,
+first with a serial loop and then with a parallel loop.
+
+
 ## Single-Function API / Example Program
 ```
 var nProcs = parseInt(process.argv[2]);
@@ -70,10 +90,9 @@ var emsParams = parXML2json.parseAll(
     30000000,           // Largest filesystem read operation (in bytes)
     10000);             // Length of longest possible XML tag-data object
 
-// Ordinary sequential loop to iterate through some of the JSON records.
+// Ordinary sequential loop to skip through some of the JSON records.
 // All work is performed using only the master thread.
 for(var idx = 0;  idx < emsParams.nRecords;  idx += Math.floor(emsParams.nRecords/3) ) {
-    //console.log('serial readback: ', idx, emsParams.outputEMS.readFF(idx) )
     console.log('serial readback: ', idx, XML2jsonEMS.readFF(idx) )
 }
 
@@ -84,7 +103,7 @@ ems.parallel( function() {
     //  Static loop scheduling is used only to demonstrate each thread
     //  having one iteration.
     ems.parForEach(0, ems.nThreads, function (idx) {
-        console.log('parallel readback', idx, XML2jsonEMS.readFF(idx));
+        console.log('parallel readback', idx, XML2jsonEMS.read(idx));
     });
 });
 
@@ -94,17 +113,18 @@ process.exit(0);  // Required to terminate other EMS processes
 The return value of `parXML2json.parseAll()` is an object:
 ```
 { 
-   outputEMS : <object>,     // EMS object used to access JSON data
-   readEMSDescr : <object>,  // EMS descriptor to be used as the argument to ems.new() by future programs
+   readEMSDescr : <object>,  // EMS descriptor used by future programs 
    nRecords : <integer>,     // JSON elements are stored at indexes 0...nRecords-1 
-   nBytesParsed : <integer>  // Number of bytes inspected while parsing (will be greater than the file size) 
+   nBytesParsed : <integer>  // Number of bytes inspected while parsing
 }
 ```
 
+### Global `XML2jsonEMS` Variable 
 Upon return, every process has the global variable `XML2jsonEMS` defined with
-an EMS object that may be used to access the JSON elements.  This is "exported"
-because in the fork-join model the non-master threads do not have any other way
-of returning data or having a side-effect.
+an EMS object that may be used to access the JSON elements 
+(ie: `XML2jsonEMS.read()`).
+This is required for per-process data persistence during serial regions,
+without which all the required modules would need to be reloaded at each fork.
 
 
 ## Future Work

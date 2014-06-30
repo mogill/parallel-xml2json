@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------+
- |  Parallel XML2JSON converter                                Version 0.1.0   |
+ |  Parallel XML2JSON converter                                Version 0.1.1   |
  |  Synthetic Semantics       http://www.synsem.com/       mogill@synsem.com   |
  +-----------------------------------------------------------------------------+
  |  Copyright (c) 2014, Synthetic Semantics LLC.  All rights reserved.         |
@@ -28,6 +28,11 @@
  |    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.             |
  |                                                                             |
  +-----------------------------------------------------------------------------*/
+
+//-------------------------------------------------------------------
+//  Module function export
+//
+module.exports = { 'parseAll': parXML2json };
 
 
 
@@ -212,11 +217,3 @@ function parXML2json(ems, nProcsArg, xmlFilenameArg, emsFilenameArg, xmlTagArg, 
     }
 
 }
-
-
-
-
-//-------------------------------------------------------------------
-//  Module function export
-//
-module.exports = { 'parseAll': parXML2json };

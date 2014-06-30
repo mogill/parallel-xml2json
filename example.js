@@ -25,9 +25,7 @@ var emsParams = parXML2json.parseAll(
 console.log('EMS descriptor:' + JSON.stringify(emsParams));
 
 for(var idx = 0;  idx < emsParams.nRecords;  idx += Math.floor(emsParams.nRecords/3) ) {
-    // Note: emsParams.outputEMS and XML2jsonEMS are equivalent only on the master process
-    // console.log('serial readback: ', idx, emsParams.outputEMS.readFF(idx) )
-    console.log('serial readback: ', idx, XML2jsonEMS.readFF(idx) )
+    console.log('serial readback: ', idx, XML2jsonEMS.read(idx) )
 }
 
 //  An EMS fork-join parallel region performs this function
