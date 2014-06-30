@@ -10,7 +10,7 @@ to which additional [EMS](https://github.com/SyntheticSemantics/ems)-based
 parallelism can be added as needed.
 
 
-## Why Parallel Processing for XML? 
+### Why Parallel Processing for XML? 
 Processing multi-gigabyte XML files suffers the dual challenges
  of slow serial processing and too large a memory footprint
  for garbage collected languages.
@@ -25,7 +25,33 @@ parser benefits from harnessing both the computing capability of multiple
 cores and parallelism to mask file system latency.
 
 
-### What This Package Does
+## Quick Start
+
+This script will download the 
+[SwissProt database from the University of Washington](http://www.cs.washington.edu/research/xmldatasets/www/repository.html#pir),
+install the required NPM modules (EMS, xml2js, and parallel-xml2json),
+copy the included example into the current directory,
+and load the XML database using 4 processes.
+
+```
+curl http://www.cs.washington.edu/research/xmldatasets/data/SwissProt/SwissProt.xml.gz | gunzip > SwissProt.xml
+npm install ems xml2js parallel-xml2json
+cp node_modules/parallel-xml2json/example.js ./
+node example.js 4 SwissProt.xml Entry 100000
+```
+
+All the XML data tagged "Entry" are stored as JSON in EMS memory,
+then the program prints some of the contents to the console,
+first with a serial loop and then with a parallel loop.
+
+
+### Performance
+Using 16 cores the program sustains throughput of 17-21MB/sec (totalling
+about 40MB/sec of I/O including both reading and writing).  This rate
+corresponds to approximately 1GB/minute to process XML into usable JSON.
+Performance varies with the length and complexity of the XML data.
+
+## What This Package Does
 
 The EMS memory region size is conservatively guesstimated on the XML file size, 
 and may be as much as double the size of the XML file.
@@ -53,26 +79,6 @@ JSON records,
 please contact us if you're interested in that capability.
 
 
-## Quick Start
-
-This script will download the 
-[SwissProt database from the University of Washington](http://www.cs.washington.edu/research/xmldatasets/www/repository.html#pir),
-install the required NPM modules (EMS, xml2js, and parallel-xml2json),
-copy the included example into the current directory,
-and load the XML database using 4 processes.
-
-```
-curl http://www.cs.washington.edu/research/xmldatasets/data/SwissProt/SwissProt.xml.gz | gunzip > SwissProt.xml
-npm install ems xml2js parallel-xml2json
-cp node_modules/parallel-xml2json/example.js ./
-node example.js 4 SwissProt.xml Entry 100000
-```
-
-All the XML data tagged "Entry" are stored as JSON in EMS memory,
-then the program prints some of the contents to the console,
-first with a serial loop and then with a parallel loop.
-
-
 ## Single-Function API / Example Program
 ```
 var nProcs = parseInt(process.argv[2]);
@@ -80,6 +86,8 @@ var xmlFilename = process.argv[3];
 var parXML2json = require('./parXML2json');
 var ems = require('ems')(nProcs, false, 'fj');
 
+//  Parse XML file in parallel and return the EMS descriptor
+//  other programs use to map this EMS file into memory.
 var emsParams = parXML2json.parseAll(
     ems,                                  // Global EMS object
     nProcs,                               // Number of processes
@@ -87,7 +95,7 @@ var emsParams = parXML2json.parseAll(
     xmlFilename.replace('.xml', '.ems'),  // EMS output filename
     process.argv[4],             // XML tag to create JSON object for
     process.argv[5],    // Maximum number of XML tag-data objects
-    2000000,           // Largest filesystem read operation (in bytes)
+    2000000,            // Largest filesystem read operation (in bytes)
     10000);             // Length of longest possible XML tag-data object
 
 // Ordinary sequential loop to skip through some of the JSON records.
@@ -126,8 +134,24 @@ an EMS object that may be used to access the JSON elements
 This is required for per-process data persistence during serial regions,
 without which all the required modules would need to be reloaded at each fork.
 
+### Function Parameters
+* `ems` - Global EMS object, used to manage parallelism in both the calling program and parse function
+* `nProcs` - Number of processes.  The system may be over-subscribed.
+* `xmlFilename` - XML input Filename.
+* `emsFilename` - EMS output filename.
+* `XMLtag` - Only XML records matching this tag are converted to JSON.  This tag may appear at any level of the hierarchy.
+* `max # tags` - A conservative estimate of the number of XML records in the file.
+* `blockSize` - Decompose the file into blocks of this size (in bytes).  This is the length of each file read operation.
+* `blockOverlap` - Because an XML record may span more than one block, blocks must overlap by
+the Length of longest possible XML tag-data object.  If underflow occurs, the parser will immediately exit.
+
 
 ## Future Work
 * Accept a user defined function that generates an unique key from the XML
   record and storing the key-value pair in EMS. 
 * Sort results into original file order.
+
+
+## License
+This software and documentation is made available under the BSD license.
+Other commercial and open source licenses are available.

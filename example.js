@@ -12,6 +12,8 @@ var xmlFilename = process.argv[3];
 var parXML2json = require('parallel-xml2json');
 var ems = require('ems')(nProcs, false, 'fj');
 
+//  Parse the XML file in parallel and return the EMS descriptor
+//  other programs use to map this EMS file into memory.
 var emsParams = parXML2json.parseAll(
     ems,                                  // Global EMS object
     nProcs,                               // Number of processes
@@ -22,8 +24,12 @@ var emsParams = parXML2json.parseAll(
     2000000,           // Largest filesystem read operation (in bytes)
     10000);            // Length of longest possible XML tag-data object
 
+// Print the EMS descriptor for future programs to use
 console.log('EMS descriptor:' + JSON.stringify(emsParams));
 
+
+// Ordinary sequential loop to skip through some of the JSON records.
+// All work is performed using only the master thread.
 for(var idx = 0;  idx < emsParams.nRecords;  idx += Math.floor(emsParams.nRecords/3) ) {
     console.log('serial readback: ', idx, XML2jsonEMS.read(idx) )
 }
