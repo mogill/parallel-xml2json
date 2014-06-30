@@ -120,7 +120,7 @@ function parXML2json(ems, nProcsArg, xmlFilenameArg, emsFilenameArg, xmlTagArg, 
                           blockOverlap, xmlFileLength, xmlTag) {
             var fd = fs.openSync(xmlFilename, 'r');
             var buffer = new Buffer(maxBlockSize + blockOverlap, 'utf8');
-            var nBlocks = (xmlFileLength / maxBlockSize) + 1;
+            var nBlocks = Math.floor(xmlFileLength / maxBlockSize) + 1;
             var xmlTagClose = '</' + xmlTag + '>\n';
             var tagRegExp = new RegExp('\<' + xmlTag + '[ \>]');
             var startTime = timerStart();
@@ -155,6 +155,10 @@ function parXML2json(ems, nProcsArg, xmlFilenameArg, emsFilenameArg, xmlTagArg, 
                         }
                     }  // else there are no XML tags in this block, but there is one in the overlap
                     recordN++;
+                }
+                if(nCharsParsed < maxBlockSize  &&  blockN != nBlocks-1) {
+                    console.log('Incomplete record -- increase block overlap/max tag length.  Currently=', blockOverlap);
+                    process.exit(1);
                 }
                 miscEMS.faa('nBytesParsed', nCharsParsed);
                 timerStop(startTime, miscEMS.readFF('nBytesParsed'), " chars (" + index + " records) parsed ", ems.myID);

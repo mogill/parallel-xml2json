@@ -78,7 +78,7 @@ first with a serial loop and then with a parallel loop.
 var nProcs = parseInt(process.argv[2]);
 var xmlFilename = process.argv[3];
 var parXML2json = require('./parXML2json');
-var ems = require('ems')(nProcs, true, 'fj');
+var ems = require('ems')(nProcs, false, 'fj');
 
 var emsParams = parXML2json.parseAll(
     ems,                                  // Global EMS object
@@ -87,7 +87,7 @@ var emsParams = parXML2json.parseAll(
     xmlFilename.replace('.xml', '.ems'),  // EMS output filename
     process.argv[4],             // XML tag to create JSON object for
     process.argv[5],    // Maximum number of XML tag-data objects
-    30000000,           // Largest filesystem read operation (in bytes)
+    2000000,           // Largest filesystem read operation (in bytes)
     10000);             // Length of longest possible XML tag-data object
 
 // Ordinary sequential loop to skip through some of the JSON records.
