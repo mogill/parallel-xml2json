@@ -66,7 +66,7 @@ curl http://www.cs.washington.edu/research/xmldatasets/data/SwissProt/SwissProt.
 npm install ems xml2js parallel-xml2json
 cp node_modules/parallel-xml2json/example.js ./
 node example.js 4 SwissProt.xml Entry 100000
-'''
+```
 
 All the XML data tagged "Entry" are stored as JSON in EMS memory,
 then the program prints some of the contents to the console,
