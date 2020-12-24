@@ -119,7 +119,7 @@ function parXML2json(ems, nProcsArg, xmlFilenameArg, emsFilenameArg, xmlTagArg, 
         function parseXML(ems, outputEMS, miscEMS, xmlFilename, maxBlockSize,
                           blockOverlap, xmlFileLength, xmlTag) {
             var fd = fs.openSync(xmlFilename, 'r');
-            var buffer = new Buffer(maxBlockSize + blockOverlap, 'utf8');
+            var buffer = Buffer.alloc(maxBlockSize + blockOverlap, 'utf8');
             var nBlocks = Math.floor(xmlFileLength / maxBlockSize) + 1;
             var xmlTagClose = '</' + xmlTag + '>\n';
             var tagRegExp = new RegExp('\<' + xmlTag + '[ \>]');
